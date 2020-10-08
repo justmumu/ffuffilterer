@@ -135,11 +135,11 @@ func ApplyFilters(slice []output.Result, filters ...Filter) []output.Result {
 	filteredRecords := make([]output.Result, 0, len(slice))
 
 	for _, s := range slice {
-		keep := true
+		keep := false
 
 		for _, f := range filters {
-			if !f(s) {
-				keep = false
+			if f(s) {
+				keep = true
 				break
 			}
 		}
