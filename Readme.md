@@ -10,6 +10,7 @@ FFuf Filterer simply filters json output.
 
 Firstly, you should install golang language and you should configure $GOPATH variable.
 After that,
+
 ``` $ go get github.com/rasity/ffuffilterer ```
 
 ### Help Preview
