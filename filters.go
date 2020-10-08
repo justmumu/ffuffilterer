@@ -7,120 +7,185 @@ type Filter func(record output.Result) bool
 func GetFilters(opts Options) []Filter {
 	filters := make([]Filter, 0)
 
-	for _, host := range opts.Host {
-		filters = append(filters, NewHostFilter(host))
-	}
-
-	for _, wc := range opts.NotCode {
-		filters = append(filters, NewNotStatusCodeFilter(wc))
-	}
-
-	for _, ws := range opts.NotLengths {
-		filters = append(filters, NewNotLengthFilter(ws))
-	}
-
-	for _, wl := range opts.NotLines {
-		filters = append(filters, NewNotLineFilter(wl))
-	}
-
-	for _, ww := range opts.NotWords {
-		filters = append(filters, NewNotWordsFilter(ww))
-	}
-
-	for _, fc := range opts.ShouldCode {
-		filters = append(filters, NewStatusCodeFilter(fc))
-	}
-
-	for _, fs := range opts.NotLengths {
-		filters = append(filters, NewLengthFilter(fs))
-	}
-
-	for _, fl := range opts.NotLines {
-		filters = append(filters, NewLineFilter(fl))
-	}
-
-	for _, fw := range opts.NotWords {
-		filters = append(filters, NewWordsFilter(fw))
-	}
+	filters = append(filters, NewHostFilter(opts.Host),
+		NewNotStatusCodeFilter(opts.NotCode),
+		NewNotLengthFilter(opts.NotLengths),
+		NewNotLineFilter(opts.NotLines),
+		NewNotWordsFilter(opts.NotWords),
+		NewStatusCodeFilter(opts.ShouldCode),
+		NewLengthFilter(opts.NotLengths),
+		NewLineFilter(opts.NotLines),
+		NewWordsFilter(opts.NotWords))
 
 	return filters
 }
 
-func NewHostFilter(host string) Filter {
+func NewHostFilter(hosts []string) Filter {
 	return func(record output.Result) bool {
-		if record.Host == host {
+		if len(hosts) == 0 {
+			return true
+		}
+
+		found := false
+		for _, host := range hosts {
+			if record.Host == host {
+				found = true
+			}
+		}
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewStatusCodeFilter(statusCode int64) Filter {
+func NewStatusCodeFilter(statusCodes []int64) Filter {
 	return func(record output.Result) bool {
-		if record.StatusCode == statusCode {
+		if len(statusCodes) == 0 {
+			return true
+		}
+
+		found := false
+		for _, sc := range statusCodes {
+			if record.StatusCode == sc {
+				found = true
+			}
+		}
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewWordsFilter(wordCount int64) Filter {
+func NewWordsFilter(wordCounts []int64) Filter {
 	return func(record output.Result) bool {
-		if record.ContentWords == wordCount {
+		if len(wordCounts) == 0 {
+			return true
+		}
+
+		found := false
+		for _, wc := range wordCounts {
+			if record.ContentWords == wc {
+				found = true
+			}
+		}
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewLengthFilter(lengthCount int64) Filter {
+func NewLengthFilter(lengthCounts []int64) Filter {
 	return func(record output.Result) bool {
-		if record.ContentLength == lengthCount {
+		if len(lengthCounts) == 0 {
+			return true
+		}
+
+		found := false
+		for _, lc := range lengthCounts {
+			if record.ContentLength == lc {
+				found = true
+			}
+		}
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewLineFilter(lineCount int64) Filter {
+func NewLineFilter(lineCounts []int64) Filter {
 	return func(record output.Result) bool {
-		if record.ContentLines == lineCount {
+		if len(lineCounts) == 0 {
+			return true
+		}
+
+		found := false
+		for _, lc := range lineCounts {
+			if record.ContentLines == lc {
+				found = true
+			}
+		}
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewNotStatusCodeFilter(statusCode int64) Filter {
+func NewNotStatusCodeFilter(statusCodes []int64) Filter {
 	return func(record output.Result) bool {
-		if record.StatusCode != statusCode {
+		if len(statusCodes) == 0 {
+			return true
+		}
+
+		found := true
+		for _, sc := range statusCodes {
+			if record.StatusCode == sc {
+				found = false
+			}
+		}
+
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewNotWordsFilter(wordCount int64) Filter {
+func NewNotWordsFilter(wordCounts []int64) Filter {
 	return func(record output.Result) bool {
-		if record.ContentWords != wordCount {
+		if len(wordCounts) == 0 {
+			return true
+		}
+
+		found := true
+		for _, wc := range wordCounts {
+			if record.ContentWords == wc {
+				found = false
+			}
+		}
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewNotLengthFilter(lengthCount int64) Filter {
+func NewNotLengthFilter(lengthCounts []int64) Filter {
 	return func(record output.Result) bool {
-		if record.ContentLength != lengthCount {
+		if len(lengthCounts) == 0 {
+			return true
+		}
+
+		found := true
+		for _, lc := range lengthCounts {
+			if record.ContentLength == lc {
+				found = false
+			}
+		}
+		if found {
 			return true
 		}
 		return false
 	}
 }
 
-func NewNotLineFilter(lineCount int64) Filter {
+func NewNotLineFilter(lineCounts []int64) Filter {
 	return func(record output.Result) bool {
-		if record.ContentLines != lineCount {
+		if len(lineCounts) == 0 {
+			return true
+		}
+
+		found := true
+		for _, wc := range lineCounts {
+			if record.ContentLines == wc {
+				found = false
+			}
+		}
+		if found {
 			return true
 		}
 		return false
@@ -135,11 +200,11 @@ func ApplyFilters(slice []output.Result, filters ...Filter) []output.Result {
 	filteredRecords := make([]output.Result, 0, len(slice))
 
 	for _, s := range slice {
-		keep := false
+		keep := true
 
 		for _, f := range filters {
-			if f(s) {
-				keep = true
+			if !f(s) {
+				keep = false
 				break
 			}
 		}
