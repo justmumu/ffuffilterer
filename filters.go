@@ -13,9 +13,9 @@ func GetFilters(opts Options) []Filter {
 		NewNotLineFilter(opts.NotLines),
 		NewNotWordsFilter(opts.NotWords),
 		NewStatusCodeFilter(opts.ShouldCode),
-		NewLengthFilter(opts.NotLengths),
-		NewLineFilter(opts.NotLines),
-		NewWordsFilter(opts.NotWords))
+		NewLengthFilter(opts.ShouldLengths),
+		NewLineFilter(opts.ShouldLines),
+		NewWordsFilter(opts.ShouldWords))
 
 	return filters
 }
