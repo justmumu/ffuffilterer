@@ -121,14 +121,14 @@ func NewNotStatusCodeFilter(statusCodes []int64) Filter {
 			return true
 		}
 
-		found := true
+		found := false
 		for _, sc := range statusCodes {
 			if record.StatusCode == sc {
-				found = false
+				found = true
 			}
 		}
 
-		if found {
+		if !found {
 			return true
 		}
 		return false
@@ -141,13 +141,13 @@ func NewNotWordsFilter(wordCounts []int64) Filter {
 			return true
 		}
 
-		found := true
+		found := false
 		for _, wc := range wordCounts {
 			if record.ContentWords == wc {
-				found = false
+				found = true
 			}
 		}
-		if found {
+		if !found {
 			return true
 		}
 		return false
@@ -160,13 +160,13 @@ func NewNotLengthFilter(lengthCounts []int64) Filter {
 			return true
 		}
 
-		found := true
+		found := false
 		for _, lc := range lengthCounts {
 			if record.ContentLength == lc {
-				found = false
+				found = true
 			}
 		}
-		if found {
+		if !found {
 			return true
 		}
 		return false
@@ -179,13 +179,13 @@ func NewNotLineFilter(lineCounts []int64) Filter {
 			return true
 		}
 
-		found := true
+		found := false
 		for _, wc := range lineCounts {
 			if record.ContentLines == wc {
-				found = false
+				found = true
 			}
 		}
-		if found {
+		if !found {
 			return true
 		}
 		return false
